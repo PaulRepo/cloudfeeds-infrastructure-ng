@@ -1,0 +1,19 @@
+@startuml atomhopper get sequence
+
+
+actor Consumer
+collections Repose
+collections Atomhopper
+database Postgres
+
+Consumer -> Repose: Get Event Request
+Repose -> Repose: Filter Request
+Repose -> Atomhopper: Get Event Request
+Atomhopper -> Atomhopper: Formulate Query
+Atomhopper -> Postgres: Query DB
+Postgres --> Atomhopper: DB Query Response
+Atomhopper --> Repose: Get Event Response
+Repose -> Repose: Filter Response
+Repose --> Consumer: Get Event Response
+
+@enduml

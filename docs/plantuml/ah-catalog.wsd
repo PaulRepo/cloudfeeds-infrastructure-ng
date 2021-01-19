@@ -1,0 +1,14 @@
+@startuml catalog
+
+actor User
+collections Repose
+collections Atomhopper
+
+User -> Repose: GET Event Request
+Repose -> Repose: Filter Request
+Repose -> Atomhopper: GET Event Request
+Atomhopper --> Repose: GET Event Response
+Repose -> Repose: Filter Response
+Repose --> User: GET Event Response
+
+@enduml

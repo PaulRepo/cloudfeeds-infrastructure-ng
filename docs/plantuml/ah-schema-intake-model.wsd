@@ -1,0 +1,25 @@
+@startuml schema intake model
+
+actor External_Dev
+actor Feeds_Dev
+
+
+
+package "Standard Usage Schema" as schema_repo {
+    collections wadl
+    collections "Simple Schema" as schema
+    component xproc
+    component core_xsd {
+        component cadf_xsd
+        component entry_xsd
+        component error_xsd
+    }
+}
+
+
+
+schema-right->xproc
+xproc-right->wadl
+xproc-down-core_xsd
+
+@enduml

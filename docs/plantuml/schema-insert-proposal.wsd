@@ -1,0 +1,10 @@
+@startuml
+skinparam componentStyle rectangle
+title XSD Generation Component
+interface "Rest API" as API
+API - [Schema]
+note left of API : Running off with Spring Boot
+[Schema] -> [Domain Object] :conversion
+[Domain Object]->[XSD]: SaxonEE
+note bottom of XSD  :Spring beans will be \n converted to XSDs using SaxonEE
+@enduml

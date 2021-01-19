@@ -1,0 +1,24 @@
+@startuml
+
+component "repose-valve" as repose {
+  artifact "standard-usage-schema" as schema {
+    folder wadls
+    file "allfeeds.wadl"
+  }
+}
+
+component "atom hopper" as atomhopper
+
+component catalog {
+  file "allfeeds.wadl" as catalogwadl
+}
+
+database "postgres no1" as db1
+database "postgres no1" as db2
+
+repose <-ri-> catalog
+repose <-do-> atomhopper
+atomhopper -do-> db1
+db1 .ri.> db2
+db2 -up-> atomhopper
+@enduml

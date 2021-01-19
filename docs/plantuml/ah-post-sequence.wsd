@@ -1,0 +1,17 @@
+@startuml atomhopper post sequence
+
+actor Publisher
+collections Repose
+collections Atomhopper
+database Postgres
+
+Publisher -> Repose: Post Event Request
+Repose -> Repose: Filter Request
+Repose -> Atomhopper: Post Event Request
+Atomhopper -> Postgres: Insert into DB
+Postgres --> Atomhopper: DB Insert Response
+Atomhopper --> Repose: Post Event Response
+Repose -> Repose: Filter Response
+Repose --> Publisher: Post Event Response
+
+@enduml

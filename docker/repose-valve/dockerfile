@@ -1,0 +1,3 @@
+FROM rackerlabs/repose:9
+
+## TODO: Generic cloudfeeds repose-valve

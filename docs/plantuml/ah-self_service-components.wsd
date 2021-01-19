@@ -1,0 +1,19 @@
+@startuml
+
+() "REST API" as api
+() "Simple Schema" as schema
+
+
+schema -> [Object] : Spring Boot
+api -> [Object] : Spring Boot
+[Object] -> [XSD] : Saxon EE Java
+
+component Repose {
+    [Filter]
+    [wadl-tools]
+}
+
+[Filter]  ..> [wadl-tools]
+[wadl-tools] - [XSD] : Saxon EE Java
+
+@enduml

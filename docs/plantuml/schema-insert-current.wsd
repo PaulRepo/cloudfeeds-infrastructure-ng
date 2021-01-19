@@ -1,0 +1,31 @@
+@startuml
+
+actor Publisher
+actor Feeds_Dev
+collections Schema
+collections Nabu
+collections Catalog
+collections Regressions
+boundary Artifactory
+actor Ops_Engineer
+entity Cloudfeeds
+
+Publisher -> Schema: Schema PR
+Schema -> Feeds_Dev: Review PR
+Feeds_Dev --> Schema: Merge PR
+Feeds_Dev -> Schema: XSD Generation
+Schema -> Nabu: XSLT Sync
+Nabu --> Schema: XSLT Sync
+Schema -> Catalog: Allfeeds wadl
+Catalog -> Artifactory: RPM Release
+Feeds_Dev -> Schema: Sample Creation
+Schema -> Artifactory: RPM Release
+Feeds_Dev -> Regressions: Test Cases
+
+Ops_Engineer -> Artifactory: Ansible Script
+Artifactory -> Cloudfeeds: Ansible Deploy
+Cloudfeeds --> Ops_Engineer: Finished deploy
+Ops_Engineer --> Feeds_Dev: Finished deploy
+Feeds_Dev --> Publisher: Finished deploy
+
+@enduml
