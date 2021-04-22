@@ -17,6 +17,7 @@
     --ssh-public-key cloudfeeds 
     --managed`
 5. This will take time ~20 Minutes. Once the cluster is ready we will get the output.
+
     `[✓]  EKS cluster "cloudfeeds" in "ap-south-1" region is ready`
 6. Check for the runnings nodes.
     `kubectl get nodes -o wide`
@@ -58,7 +59,7 @@
             trow-test   1/1     1            1           28s
         ```
 ## Deploy CloudFeeds apps (Postgres, AtomHopper, Repose)
-**Postgres**
+### Postgres
 The postgres.yaml manifest file contains the resources (Persistent Volume, Persistent Volume Claim, Deployment, Service) required to run a Postgres database on a kubernetes cluster.
 - Create the resouces
 - `kubectl create -f postgres.yaml`
@@ -71,7 +72,7 @@ The postgres.yaml manifest file contains the resources (Persistent Volume, Persi
   - Paste and execute the content on psql console from the [link](https://raw.githubusercontent.com/rackerlabs/atom-hopper/master/adapters/jdbc/src/main/resources/ddl/jdbc/atomhopper-fresh-schema-ddl-postgres.sql) 
   - Quit and exit the pod. `\q`
 
-## Cloudfeeds - Atomhopper and Repose
+### Cloudfeeds - Atomhopper and Repose
 - Change the application-context.xml file of the Atomhopper to connect postgres on **postgres:5432** 
 - Build the Cloudfeeds Atomhopper image locally.
 - Now tag the Atomhopper image and push to the trow registry
