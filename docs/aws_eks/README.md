@@ -5,8 +5,10 @@
 1. Install the proper version of AWS CLI, kubectl, eksctl as mentioned on the link https://docs.aws.amazon.com/eks/latest/userguide/getting-started-eksctl.html
 2. In this guide we will follow the steps to create the Managed Node linux cluster. 
 3. Create ec2 key pair, you can change the region as per your convenience.
+    
     `aws ec2 create-key-pair --region ap-south-1 --key-name cloudfeeds`
-4. Create the EKS cluster. This will create all the required resources IAM Roles, VPC, Security Groups...etc to run an EKS cluster including EC2 worker nodes. You can check the resources tab of CloudFormation stack to see all the resources.   
+4. Create the EKS cluster. This will create all the required resources IAM Roles, VPC, Security Groups...etc to run an EKS cluster including EC2 worker nodes. You can check the resources tab of CloudFormation stack to see all the resources.  
+
     `eksctl create cluster 
     --name cloudfeeds 
     --tags "Owner=CloudFeeds" 
@@ -20,8 +22,10 @@
 
     `[✓]  EKS cluster "cloudfeeds" in "ap-south-1" region is ready`
 6. Check for the runnings nodes.
+
     `kubectl get nodes -o wide`
 7. Create *cloudfeeds* namespace on the cluster and set it in current context as default namespace for all future refferences
+
     `kubectl create namespace cloudfeeds`
     `kubectl config set-context --current --namespace=cloudfeeds`
 8. Allow traffic from your local machine to EC2 workder nodes using the public IP.
@@ -59,6 +63,7 @@
             trow-test   1/1     1            1           28s
         ```
 ## Deploy CloudFeeds apps (Postgres, AtomHopper, Repose)
+**Makre sure your are in the manifest directory**
 ### Postgres
 The postgres.yaml manifest file contains the resources (Persistent Volume, Persistent Volume Claim, Deployment, Service) required to run a Postgres database on a kubernetes cluster.
 - Create the resouces
