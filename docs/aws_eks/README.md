@@ -32,7 +32,7 @@
     ```
     kubectl get nodes -o wide
     ```
-7. Create *cloudfeeds* namespace on the cluster and set it in current context as default namespace for all future refferences
+7. Create *cloudfeeds* namespace on the cluster and set it in current context as default namespace for all future refferences.
 
     ```
     kubectl create namespace cloudfeeds
@@ -83,7 +83,7 @@
       trow-test   1/1     1            1           28s
       ```
 ## Deploy CloudFeeds apps (Postgres, AtomHopper, Repose)
-**Makre sure your are in the manifest directory**
+**Make sure you are in the manifest directory**
 ### Postgres
 The postgres.yaml manifest file contains the resources (Persistent Volume, Persistent Volume Claim, Deployment, Service) required to run a Postgres database on a kubernetes cluster.
 - Create the resouces for postgres.
@@ -127,8 +127,8 @@ The postgres.yaml manifest file contains the resources (Persistent Volume, Persi
     ```
     kubectl apply -f cloudfeeds.yaml
     ```
-    - Final Snapshot of all k8s resources
-        ```
+- Final Snapshot of all k8s resources
+    ```
             NAME                                                        READY   STATUS      RESTARTS   AGE
             pod/atomhopper-649bcb5d4c-r9qx5                             1/1     Running     0          44s
             pod/copy-certs-b282bbdb-fed7-4011-8c46-fac6217f783e-xssb5   0/1     Completed   0          166m
@@ -159,16 +159,16 @@ The postgres.yaml manifest file contains the resources (Persistent Volume, Persi
             NAME                                                        COMPLETIONS   DURATION   AGE
             job.batch/copy-certs-b282bbdb-fed7-4011-8c46-fac6217f783e   1/1           10s        166m
             job.batch/copy-certs-fa18038d-e808-49a0-9ca3-1de6305f3a95   1/1           10s        166m
-        ```
+    ```
+ - ```kubectl get nodes -o wide``` and look for the External-IP field for public IP of the node. 
  - Get the feeds. 
    ```
     http://[Public IP of the Node]:30002/support/events
    ```
- - ```kubectl get nodes -o wide``` and look for the External-IP field for public IP of the node. 
+
     ```
     curl http://13.235.65.50:30002/support/events
-    ```
-    ```
+
     <?xml version="1.0" encoding="UTF-8"?>
     <feed xmlns="http://www.w3.org/2005/Atom">
     <link href="http://localhost/support/events/" rel="current"/>
