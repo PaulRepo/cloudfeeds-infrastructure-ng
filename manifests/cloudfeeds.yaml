@@ -1,0 +1,103 @@
+#This manifest file contains resources (deployment, service) for Atomhopper and Repose node for cloudfeeds POC
+#Repose external will be exposed on node port 30002 after a successful deployment
+#The images will be pulled from a trow registry locally deployed on the eks cluster
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: cloudfeeds-config
+  namespace: cloudfeeds
+data:
+  destinationPort: "8080"
+
+---
+#Atomhopper Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: atomhopper
+  namespace: cloudfeeds
+spec:
+  selector:
+    matchLabels:
+      app: atomhopper
+  replicas: 1
+  template:
+    metadata:
+      name: atomhopper
+      labels:
+        app: atomhopper
+    spec:
+      containers:
+      - name: atomhopper
+        image: trow.cloudfeeds:31000/cloudfeeds/atomhopper:eks
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 8080
+
+---
+#AtomHopper Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: atomhopper
+  namespace: cloudfeeds
+  labels:
+    app: atomhopper
+spec:
+  type: NodePort 
+  ports:
+  - port: 8080
+    nodePort: 30001
+    protocol: TCP
+  selector:
+    app: atomhopper
+
+---
+# Repose Deployment 
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: repose-external
+  namespace: cloudfeeds
+spec:
+  selector:
+    matchLabels:
+      app: repose-external
+  replicas: 1
+  template:
+    metadata:
+      name: repose-external
+      labels:
+        app: repose-external
+    spec:
+      containers:
+      - name: repose-external
+        image: trow.cloudfeeds:31000/cloudfeeds/repose-external:eks
+        imagePullPolicy: IfNotPresent
+        env: 
+        - name: DESTINATION_PORT
+          valueFrom: 
+            configMapKeyRef:
+              name: cloudfeeds-config
+              key: destinationPort
+        ports:
+        - containerPort: 9090
+
+---
+#Repose Service 
+apiVersion: v1
+kind: Service
+metadata:
+  name: repose-external
+  namespace: cloudfeeds
+  labels:
+    app: repose-external
+spec:
+  type: NodePort 
+  ports:
+  - port: 9090
+    nodePort: 30002
+    protocol: TCP
+  selector:
+    app: repose-external
