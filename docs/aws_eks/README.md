@@ -6,28 +6,38 @@
 2. In this guide we will follow the steps to create the Managed Node linux cluster. 
 3. Create ec2 key pair, you can change the region as per your convenience.
     
-    `aws ec2 create-key-pair --region ap-south-1 --key-name cloudfeeds`
+    ```
+    aws ec2 create-key-pair --region ap-south-1 --key-name cloudfeeds
+    ```
 4. Create the EKS cluster. This will create all the required resources IAM Roles, VPC, Security Groups...etc to run an EKS cluster including EC2 worker nodes. You can check the resources tab of CloudFormation stack to see all the resources.  
 
-    `eksctl create cluster 
-    --name cloudfeeds 
-    --tags "Owner=CloudFeeds" 
-    --region ap-south-1 
-    --with-oidc 
-    --node-type t3.medium 
-    --ssh-access 
-    --ssh-public-key cloudfeeds 
-    --managed`
+    ```
+    eksctl create cluster \
+    --name cloudfeeds \
+    --tags "Owner=CloudFeeds" \
+    --region ap-south-1 \
+    --with-oidc \
+    --node-type t3.medium \
+    --ssh-access \
+    --ssh-public-key cloudfeeds \
+    --managed
+    ```
 5. This will take time ~20 Minutes. Once the cluster is ready we will get the output.
 
-    `[✓]  EKS cluster "cloudfeeds" in "ap-south-1" region is ready`
+    ```
+    [✓]  EKS cluster "cloudfeeds" in "ap-south-1" region is ready
+    ```
 6. Check for the runnings nodes.
 
-    `kubectl get nodes -o wide`
+    ```
+    kubectl get nodes -o wide
+    ```
 7. Create *cloudfeeds* namespace on the cluster and set it in current context as default namespace for all future refferences
 
-    `kubectl create namespace cloudfeeds`
-    `kubectl config set-context --current --namespace=cloudfeeds`
+    ```
+    kubectl create namespace cloudfeeds
+    kubectl config set-context --current --namespace=cloudfeeds
+    ```
 8. Allow traffic from your local machine to EC2 workder nodes using the public IP.
     - Go to the Security Group section under EC2 on AWS Console and find a Security Group that contains `*-remoteAccess` in the name. 
     - Modify the inbound rule to add your local IP for all TCP traffic.
@@ -40,56 +50,83 @@
 ## Deply Trow registry on EKS
 1. Deploy the Trow registry on eks cluster by following the instructions given on the link
     https://github.com/ContainerSolutions/trow/blob/main/QUICK-INSTALL.md
-    Follow the **Automatic Installation** instructions and provide the namespace **cloudfeeds**
-    ***If you are on `Mac` and installing it again just `remove` the `kubernetes certificate` present under `system keychain` using the `Keychain Access` app available on Mac***
-    - `git clone git@github.com:ContainerSolutions/trow.git`
-    - `cd trow/quick-install/`
-    - `./install.sh cloudfeeds`
+    Follow the **Automatic Installation** instructions and provide the namespace **cloudfeeds**.
+    
+    ***If you are on `Mac` and installing it again, just `remove` the `kubernetes certificate` present under `system keychain` using the `Keychain Access` app available on Mac***
+    ```
+       git clone git@github.com:ContainerSolutions/trow.git
+       cd trow/quick-install/
+       ./install.sh cloudfeeds
+    ```
     - Select **`N`** for 
-     *Do you want to configure Trow as a validation webhook (NB this will stop external images from being deployed to the cluster)? (y/n)*
+
+      *Do you want to configure Trow as a validation webhook (NB this will stop external images from being deployed to the cluster)? (y/n)*
     - **If you are using a Mac, restart Docker once the install script has completed**
-    - Use the Docker Desktop restart option from GUI or hit the below commands on terminal 
-      `osascript -e 'quit app "Docker"'`
-      `open -a Docker`
+    - Use the Docker Desktop restart option from GUI or hit the below commands on terminal
+      ```
+      osascript -e 'quit app "Docker"'`
+      open -a Docker
+      ```
     - Test using a sample nginx image: 
-      `docker pull nginx:alpine`
-      `docker tag nginx:alpine trow.cloudfeeds:31000/test/nginx:alpine`
-      `docker push trow.cloudfeeds:31000/test/nginx:alpine`
+
+      ```
+       docker pull nginx:alpine
+       docker tag nginx:alpine trow.cloudfeeds:31000/test/nginx:alpine
+       docker push trow.cloudfeeds:31000/test/nginx:alpine
+      ```
     - Create a deployment from the recently pushed image to prove the case
-    - `kubectl create deploy trow-test --image=trow.cloudfeeds:31000/test/nginx:alpine`
-    - `kubectl get deploy trow-test`
-        ``` 
-            NAME        READY   UP-TO-DATE   AVAILABLE   AGE
-            trow-test   1/1     1            1           28s
-        ```
+      ```
+      kubectl create deploy trow-test --image=trow.cloudfeeds:31000/test/nginx:alpine
+      kubectl get deploy trow-test`
+
+      NAME        READY   UP-TO-DATE   AVAILABLE   AGE
+      trow-test   1/1     1            1           28s
+      ```
 ## Deploy CloudFeeds apps (Postgres, AtomHopper, Repose)
 **Makre sure your are in the manifest directory**
 ### Postgres
 The postgres.yaml manifest file contains the resources (Persistent Volume, Persistent Volume Claim, Deployment, Service) required to run a Postgres database on a kubernetes cluster.
-- Create the resouces
-- `kubectl create -f postgres.yaml`
+- Create the resouces for postgres.
+  ```
+  kubectl create -f postgres.yaml
+  ```
 - Get inside the Posgres pod to create the database and relations that is need to post and get the feeds.
-  - `kubectl exec --stdin --tty postgres-0 -- /bin/bash`
-  - `psql -U postgres`
+    ```
+    kubectl exec --stdin --tty postgres-0 -- /bin/bash
+    psql -U postgres
+    ```
   - You should see the psql console: *postgres=#*
-  - Create database support: `create database support;`
-  - Change current database to support: `\c support;`
+  - Create database support and change current database
+    ```
+    create database support;
+    \c support;
+    ```
   - Paste and execute the content on psql console from the [link](https://raw.githubusercontent.com/rackerlabs/atom-hopper/master/adapters/jdbc/src/main/resources/ddl/jdbc/atomhopper-fresh-schema-ddl-postgres.sql) 
-  - Quit and exit the pod. `\q`
+  - Quit psql console and exit the pod. 
+    ```
+    \q
+    exit
+    ```
 
 ### Cloudfeeds - Atomhopper and Repose
 - Change the application-context.xml file of the Atomhopper to connect postgres on **postgres:5432** 
 - Build the Cloudfeeds Atomhopper image locally.
 - Now tag the Atomhopper image and push to the trow registry
-    - `docker tag cloudfeeds-atomhopper:eks trow.cloudfeeds:31000/cloudfeeds/atomhopper:eks`
-    - `docker push trow.cloudfeeds:31000/cloudfeeds/atomhopper:eks`
+    ```
+    docker tag cloudfeeds-atomhopper:eks trow.cloudfeeds:31000/cloudfeeds/atomhopper:eks
+    docker push trow.cloudfeeds:31000/cloudfeeds/atomhopper:eks
+    ```
 - Make sure the Repose External configuration file system-model.cfg.xml is configured with     **hostname="atomhopper"**
 - Build the Repose External image locally 
 - Tag and push to the trow registry
-    - `docker tag repose-external:eks trow.cloudfeeds:31000/cloudfeeds/repose-external:eks`
-    - `docker push trow.cloudfeeds:31000/cloudfeeds/repose-external:eks`
+    ```
+    docker tag repose-external:eks trow.cloudfeeds:31000/cloudfeeds/repose-external:eks
+    docker push trow.cloudfeeds:31000/cloudfeeds/repose-external:eks
+    ```
 - Create Cloudfeeds resources 
-    - `kubectl apply -f cloudfeeds.yaml`
+    ```
+    kubectl apply -f cloudfeeds.yaml
+    ```
     - Final Snapshot of all k8s resources
         ```
             NAME                                                        READY   STATUS      RESTARTS   AGE
@@ -123,9 +160,14 @@ The postgres.yaml manifest file contains the resources (Persistent Volume, Persi
             job.batch/copy-certs-b282bbdb-fed7-4011-8c46-fac6217f783e   1/1           10s        166m
             job.batch/copy-certs-fa18038d-e808-49a0-9ca3-1de6305f3a95   1/1           10s        166m
         ```
- - Get the feeds. `http://[Public IP of the Node]:30002/support/events`
- - `kubectl get nodes -o wide` and look for the External-IP field for public IP of the node. 
- -  `curl http://13.235.65.50:30002/support/events`
+ - Get the feeds. 
+   ```
+    http://[Public IP of the Node]:30002/support/events
+   ```
+ - ```kubectl get nodes -o wide``` and look for the External-IP field for public IP of the node. 
+    ```
+    curl http://13.235.65.50:30002/support/events
+    ```
     ```
     <?xml version="1.0" encoding="UTF-8"?>
     <feed xmlns="http://www.w3.org/2005/Atom">
@@ -164,7 +206,9 @@ The postgres.yaml manifest file contains the resources (Persistent Volume, Persi
     ```
 
 - The feed should be available on the next GET call.
-    `curl http://13.235.65.50:30002/support/events  `
+    ```
+    curl http://13.235.65.50:30002/support/events 
+    ```
     ```
     <?xml version="1.0" encoding="UTF-8"?>
     <feed xmlns="http://www.w3.org/2005/Atom">
@@ -214,6 +258,8 @@ The postgres.yaml manifest file contains the resources (Persistent Volume, Persi
     </feed>
     ```
 ## Delete the cluster
-- `eksctl delete cluster --name cloudfeeds --region ap-south-1`
-- `aws ec2 delete-key-pair --region ap-south-1 --key-name cloudfeeds`
+```
+eksctl delete cluster --name cloudfeeds --region ap-south-1
+aws ec2 delete-key-pair --region ap-south-1 --key-name cloudfeeds
+```
 - If the stack deletion fails. Check and delete that particular failing resource manually from the AWS Console and hit the delete cluster command again.
