@@ -31,9 +31,9 @@
 8. Allow traffic from your local machine to EC2 workder nodes using the public IP.
     - Go to the Security Group section under EC2 on AWS Console and find a Security Group that contains `*-remoteAccess` in the name. 
     - Modify the inbound rule to add your local IP for all TCP traffic.
-        -- Type-> All TCP
-        -- Source-> My IP 
-        -- Description-> Your Comments
+        - Type-> All TCP
+        - Source-> My IP 
+        - Description-> Your Comments
     - Also modify Source-> My IP for SSH access. 
     - Remove IPv6 rule for SSH.
     - Hit `Apply Rules`
