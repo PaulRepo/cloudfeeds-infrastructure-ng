@@ -48,40 +48,41 @@
     - Remove IPv6 rule for SSH.
     - Hit `Apply Rules`
 ## Deply Trow registry on EKS
-1. Deploy the Trow registry on eks cluster by following the instructions given on the link
-    https://github.com/ContainerSolutions/trow/blob/main/QUICK-INSTALL.md
-    Follow the **Automatic Installation** instructions and provide the namespace **cloudfeeds**.
+Deploy the Trow registry on eks cluster by following the instructions given on the link
+https://github.com/ContainerSolutions/trow/blob/main/QUICK-INSTALL.md
+Follow the **Automatic Installation** instructions and provide the namespace **cloudfeeds**.
     
-    ***If you are on `Mac` and installing it again, just `remove` the `kubernetes certificate` present under `system keychain` using the `Keychain Access` app available on Mac***
+***If you are on `Mac` and installing it again, just `remove` the `kubernetes certificate` present under `system keychain` using the `Keychain Access` app available on Mac***
+- Get the code on local and install using script
     ```
-       git clone git@github.com:ContainerSolutions/trow.git
-       cd trow/quick-install/
-       ./install.sh cloudfeeds
+    git clone git@github.com:ContainerSolutions/trow.git
+    cd trow/quick-install/
+    ./install.sh cloudfeeds
     ```
-    - Select **`N`** for 
+- Select **`N`** for 
 
-      *Do you want to configure Trow as a validation webhook (NB this will stop external images from being deployed to the cluster)? (y/n)*
-    - **If you are using a Mac, restart Docker once the install script has completed**
-    - Use the Docker Desktop restart option from GUI or hit the below commands on terminal
-      ```
-      osascript -e 'quit app "Docker"'`
-      open -a Docker
-      ```
-    - Test using a sample nginx image: 
+    *Do you want to configure Trow as a validation webhook (NB this will stop external images from being deployed to the cluster)? (y/n)*
+- **If you are using a Mac, restart Docker once the install script has completed**
+- Use the Docker Desktop restart option from GUI or hit the below commands on terminal
+    ```
+    osascript -e 'quit app "Docker"'`
+    open -a Docker
+    ```
+- Test using a sample nginx image: 
 
-      ```
-       docker pull nginx:alpine
-       docker tag nginx:alpine trow.cloudfeeds:31000/test/nginx:alpine
-       docker push trow.cloudfeeds:31000/test/nginx:alpine
-      ```
-    - Create a deployment from the recently pushed image to prove the case
-      ```
-      kubectl create deploy trow-test --image=trow.cloudfeeds:31000/test/nginx:alpine
-      kubectl get deploy trow-test`
+    ```
+    docker pull nginx:alpine
+    docker tag nginx:alpine trow.cloudfeeds:31000/test/nginx:alpine
+    docker push trow.cloudfeeds:31000/test/nginx:alpine
+    ```
+- Create a deployment from the recently pushed image to prove the case
+    ```
+    kubectl create deploy trow-test --image=trow.cloudfeeds:31000/test/nginx:alpine
+    kubectl get deploy trow-test`
 
-      NAME        READY   UP-TO-DATE   AVAILABLE   AGE
-      trow-test   1/1     1            1           28s
-      ```
+    NAME        READY   UP-TO-DATE   AVAILABLE   AGE
+    trow-test   1/1     1            1           28s
+    ```
 ## Deploy CloudFeeds apps (Postgres, AtomHopper, Repose)
 **Make sure you are in the manifest directory**
 ### Postgres
@@ -95,14 +96,14 @@ The postgres.yaml manifest file contains the resources (Persistent Volume, Persi
     kubectl exec --stdin --tty postgres-0 -- /bin/bash
     psql -U postgres
     ```
-  - You should see the psql console: *postgres=#*
-  - Create database support and change current database
+- You should see the psql console: *postgres=#*
+- Create database support and change current database
     ```
     create database support;
     \c support;
     ```
-  - Paste and execute the content on psql console from the [link](https://raw.githubusercontent.com/rackerlabs/atom-hopper/master/adapters/jdbc/src/main/resources/ddl/jdbc/atomhopper-fresh-schema-ddl-postgres.sql) 
-  - Quit psql console and exit the pod. 
+- Paste and execute the content on psql console from the [link](https://raw.githubusercontent.com/rackerlabs/atom-hopper/master/adapters/jdbc/src/main/resources/ddl/jdbc/atomhopper-fresh-schema-ddl-postgres.sql) 
+- Quit psql console and exit the pod. 
     ```
     \q
     exit
