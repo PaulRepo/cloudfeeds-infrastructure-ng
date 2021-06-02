@@ -1,0 +1,8 @@
+#Configuration file for Cloudfeed resources.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: cloudfeeds-config
+  namespace: cloudfeeds
+data:
+  destinationPort: "8080"

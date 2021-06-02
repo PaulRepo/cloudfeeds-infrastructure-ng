@@ -47,6 +47,8 @@
     - Also modify Source-> My IP for SSH access. 
     - Remove IPv6 rule for SSH.
     - Hit `Apply Rules`
+> :warning: **Teardown the cluster when you are done**:  Leaving it up costs money. [Instructions](#delete-cluster)
+
 ## Deply Trow registry on EKS
 Deploy the Trow registry on eks cluster by following the instructions given on the link
 https://github.com/ContainerSolutions/trow/blob/main/QUICK-INSTALL.md
@@ -62,7 +64,7 @@ Follow the **Automatic Installation** instructions and provide the namespace **c
 - Select **`N`** for 
 
     *Do you want to configure Trow as a validation webhook (NB this will stop external images from being deployed to the cluster)? (y/n)*
-- **If you are using a Mac, restart Docker once the install script has completed**
+- **Restart Docker once the install script has completed**
 - Use the Docker Desktop restart option from GUI or hit the below commands on terminal
     ```
     osascript -e 'quit app "Docker"'`
@@ -84,7 +86,7 @@ Follow the **Automatic Installation** instructions and provide the namespace **c
     trow-test   1/1     1            1           28s
     ```
 ## Deploy CloudFeeds apps (Postgres, AtomHopper, Repose)
-**Make sure you are in the manifest directory**
+**Navigate to the manifests directory**
 ### Postgres
 The postgres.yaml manifest file contains the resources (Persistent Volume, Persistent Volume Claim, Deployment, Service) required to run a Postgres database on a kubernetes cluster.
 - Create the resouces for postgres.
@@ -108,7 +110,7 @@ The postgres.yaml manifest file contains the resources (Persistent Volume, Persi
     \q
     exit
     ```
-
+- [Learn more on psql console](https://www.postgresql.org/docs/13/app-psql.html)
 ### Cloudfeeds - Atomhopper and Repose
 - Change the application-context.xml file of the Atomhopper to connect postgres on **postgres:5432** 
 - Build the Cloudfeeds Atomhopper image locally.
@@ -139,10 +141,10 @@ The postgres.yaml manifest file contains the resources (Persistent Volume, Persi
             pod/trow-deploy-7dc5bd7654-tncpp                            1/1     Running     0          167m
 
             NAME                      TYPE       CLUSTER-IP       EXTERNAL-IP   PORT(S)          AGE
-            service/atomhopper        NodePort   10.100.184.216   <none>        8080:30001/TCP   45s
-            service/postgres          NodePort   10.100.155.111   <none>        5432:30000/TCP   114m
-            service/repose-external   NodePort   10.100.107.105   <none>        9090:30002/TCP   44s
-            service/trow              NodePort   10.100.150.101   <none>        443:31000/TCP    167m
+            service/atomhopper        NodePort   10.xxx.xxx.xxx   <none>        8080:30001/TCP   45s
+            service/postgres          NodePort   10.xxx.xxx.xxx   <none>        5432:30000/TCP   114m
+            service/repose-external   NodePort   10.xxx.xxx.xxx   <none>        9090:30002/TCP   44s
+            service/trow              NodePort   10.xxx.xxx.xxx   <none>        443:31000/TCP    167m
 
             NAME                              READY   UP-TO-DATE   AVAILABLE   AGE
             deployment.apps/atomhopper        1/1     1            1           45s
@@ -168,7 +170,7 @@ The postgres.yaml manifest file contains the resources (Persistent Volume, Persi
    ```
 
     ```
-    curl http://13.235.65.50:30002/support/events
+    curl http://x.x.x.x:30002/support/events
 
     <?xml version="1.0" encoding="UTF-8"?>
     <feed xmlns="http://www.w3.org/2005/Atom">
@@ -203,12 +205,12 @@ The postgres.yaml manifest file contains the resources (Persistent Volume, Persi
       </event>
     </atom:content>
     </atom:entry>' \
-    http://13.235.65.50:30002/support/events
+    http://x.x.x.x:30002/support/events
     ```
 
 - The feed should be available on the next GET call.
     ```
-    curl http://13.235.65.50:30002/support/events 
+    curl http://x.x.x.x:30002/support/events 
     ```
     ```
     <?xml version="1.0" encoding="UTF-8"?>
@@ -258,7 +260,8 @@ The postgres.yaml manifest file contains the resources (Persistent Volume, Persi
     </atom:entry>
     </feed>
     ```
-## Delete the cluster
+
+## <a id="delete-cluster"></a>Delete the cluster
 ```
 eksctl delete cluster --name cloudfeeds --region ap-south-1
 aws ec2 delete-key-pair --region ap-south-1 --key-name cloudfeeds

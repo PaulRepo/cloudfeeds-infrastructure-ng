@@ -1,0 +1,50 @@
+#This manifest file defines the resources (Deployment, Service) for Repose Internal.
+#Repose will be exposed on node port 30002 after a successful deployment
+
+# Deployment 
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: repose-internal
+  namespace: cloudfeeds
+spec:
+  selector:
+    matchLabels:
+      app: repose-internal
+  replicas: 1
+  template:
+    metadata:
+      name: repose-internal
+      labels:
+        app: repose-internal
+    spec:
+      containers:
+      - name: repose-internal
+        image: trow.cloudfeeds:31000/cloudfeeds/repose-internal:eks
+        imagePullPolicy: IfNotPresent
+        env: 
+        - name: DESTINATION_PORT
+          valueFrom: 
+            configMapKeyRef:
+              name: cloudfeeds-config
+              key: destinationPort
+        ports:
+        - containerPort: 9090
+
+---
+# Service 
+apiVersion: v1
+kind: Service
+metadata:
+  name: repose-internal
+  namespace: cloudfeeds
+  labels:
+    app: repose-internal
+spec:
+  type: NodePort 
+  ports:
+  - port: 9090
+    nodePort: 30002
+    protocol: TCP
+  selector:
+    app: repose-internal
