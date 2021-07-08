@@ -19,7 +19,3 @@ $docker run -itd --name ddb-local -p 8000:8001 --env PORT=8001 ddb-local:latest
 You can explore the **[NoSQL Workbench](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/workbench.html)** by AWS to connect and manage the DynamoDB local and remote.
 
 Or local DynamoDB can be explored via default shell: http://localhost:8000/shell/
-
-
-
-
