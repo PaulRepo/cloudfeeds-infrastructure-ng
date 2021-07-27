@@ -1,0 +1,45 @@
+#This manifest file contains resources (deployment, service) for CloudFeeds Atomhopper 
+#The images will be pulled from a trow registry locally deployed on the eks cluster
+
+#Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: atomhopper
+  namespace: cloudfeeds
+spec:
+  selector:
+    matchLabels:
+      app: atomhopper
+  replicas: 1
+  template:
+    metadata:
+      name: atomhopper
+      labels:
+        app: atomhopper
+    spec:
+      containers:
+      - name: atomhopper
+        image: trow.cloudfeeds:31000/cloudfeeds/atomhopper:eks
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 8080
+
+---
+#Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: atomhopper
+  namespace: cloudfeeds
+  labels:
+    app: atomhopper
+spec:
+  type: NodePort 
+  ports:
+  - port: 8080
+    nodePort: 30001
+    protocol: TCP
+  selector:
+    app: atomhopper
+
