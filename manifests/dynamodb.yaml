@@ -1,0 +1,48 @@
+#This will create a DynamoDB deployment and service specific to CloudFeeds and it can be used for development and testing purpose.
+#To build customized DynamoDB image, use the Dockerfile present under dynamodb-local directory.
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dynamodb-local
+  namespace: cloudfeeds
+  labels:
+    app: dynamodb-local
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: dynamodb-local
+  template:
+    metadata:
+      labels:
+        app: dynamodb-local    
+    spec:
+      containers:
+      - name: dynamodb-local
+        image: dynamodb-local:latest
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 8000
+          name: http
+          protocol: TCP
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ddb
+  namespace: cloudfeeds
+  labels:
+    app: dynamodb-local
+
+spec:
+  ports:
+  - port: 8000
+    nodePort: 30000
+    protocol: TCP
+  type: NodePort 
+  selector:
+    app: dynamodb-local
+
+    
