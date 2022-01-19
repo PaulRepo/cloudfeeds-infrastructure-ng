@@ -1,17 +1,17 @@
 variable "aws_access_key" {
-default = "ASIA2R5DFDN5KPH4TJQA"
+default = ""
 }
 
 variable "aws_secret_key" {
-default = "t4kAV9qgZkbArA2BEuAmNDJDQXgf7jPt9Xjl81Km"
+default = ""
 }
 
 variable "aws_session_token" {
-default = "IQoJb3JpZ2luX2VjENX//////////wEaCXVzLWVhc3QtMSJHMEUCIQCvTXNh8hpGnReHaZuDxzYDMruOX6tfloUxNEYbBXihcQIgU7u8upVUtQeszjgLILbVxgzp+oPTe81B33ZAYG/2h9Aq5gII7v//////////ARACGgw3MjU2NTQ3NzI2MDIiDN+wJfy6FY0lhrSR2Sq6AsfNrQW6x0dN/jU2b0z2TB/iqypJ8Nn2dh+dCd58HyhWcxKAbhnZZyN9ylJN5xQNUYeSahff29rD84IaTRYZozEB1Sq3xA8Iq3VxJr+5hIh9sHJA0eFsPFgKV13sVcFEKG7qIVqsDpAly+3QLyB5VDILe7caOsTuhKuITqIXAYVJM4xagjuFCYfg3YQv18XttjNriv3wLskMzxjkKtUN2lhQT7AH8jPDZo0dVyB6rYtC4Dpa/Q6hGkQdOBhOT7jt7g9KDjZE9I5vJQHIEltlTd9oS0Ec5pI7lSAoe8A4RyRnRQsZ7d8U68vQ4O0XQKgTIAoS1G4uAgCG8vNUno/sqwEeTyVy7xr9DMYwqKPr/ZA3kRGtzd+H5tGF2zCs/BDwea8jcCQoDWVypj7iU30JAfoek+nG+vYTK8caML2OoI8GOt0BRMfW+LdXF4dQMBXAgeiMiEaen8VqJSxfqAoaf465D7kTi+dV/9LkGivPQyHxHy7XFTC61nr2Er/30XUw3J3X/tjJt08QqvUmGJfZfB8tBRdT4rhQV0YPEKqV9/yXNYIH6Jh3pojndgYjhFcJF0j8Ni2hApscqs1EsY7x222nhHlcUhvfZxISbfSGgAaXZYd7Op9GCZPeO71Ty4g5XgL+RwJvZlVX+xyzhjZUYwFuYqogzphqTotXFlY8bsjpCAj1kCssfMZpdVY22qfvDZyb88kZsrkEZ2GrACv8vas="
+default = ""
 }
 
 variable "region" {
-    default = "ap-south-1"
+    default = "us-east-1"
 }
 
 ## List of supported Cloud Feeds regions
