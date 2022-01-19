@@ -36,7 +36,7 @@ resource "aws_dynamodb_table" "cloudfeeds_table" {
   }
 
   tags = {
-    Name   = var.table_name
+    Name = var.table_name
   }
 }
 

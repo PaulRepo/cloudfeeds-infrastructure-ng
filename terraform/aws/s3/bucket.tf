@@ -7,6 +7,6 @@ resource "aws_s3_bucket" "cloudfeeds_bucket" {
   }
 
   tags = {
-    Name        = var.bucket_name
+    Name = var.bucket_name
   }
 }
