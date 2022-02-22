@@ -1,0 +1,26 @@
+@startuml
+state FeatureBranch 
+state MasterBranch
+state CI_Build 
+
+state PR 
+
+[*]           -down-> FeatureBranch
+MasterBranch  --> FeatureBranch         : Create Branch
+FeatureBranch --> PR  		            : Pull Request
+PR            --> MasterBranch          : Verified
+PR 	          -[dashed]-> FeatureBranch : Change Requested
+PR            -[dashed]-> CI_Build    	: Webhook
+CI_Build      -[dashed]-> PR            : Build Result
+MasterBranch  -left-> [*]
+
+state CI_Build {
+	state BuildCheck <<choice>>
+	[*]         --> FeatureCode : New Changes
+    FeatureCode --> CodeBuild   : Build New Changes
+    CodeBuild   --> BuildCheck  : Build State
+    BuildCheck  --> RunTests    : Pass
+    BuildCheck  --> [*]         : Failed
+    RunTests    --> [*]
+}
+@enduml
