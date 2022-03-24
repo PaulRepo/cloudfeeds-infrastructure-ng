@@ -1,21 +1,25 @@
 variable "aws_access_key" {
-default = ""
+    description = "Access key to AWS console"
 }
 
 variable "aws_secret_key" {
-default = ""
+    description = "Secret key to AWS console"
 }
 
 variable "aws_session_token" {
-default = ""
+    description = "Session token to AWS"
 }
 
-variable "region" {
-    default = "us-east-1"
+variable "aws_region" {
+    description = "AWS Region"
+}
+
+variable "aws_account_id" {
+    description = "AWS account id for datadog integration configuration"
 }
 
 ## List of supported Cloud Feeds regions
-variable "environment" {
+variable "environments" {
     description = "The supported environments"
     type        = map(string)
     default     = {
@@ -28,7 +32,6 @@ variable "environment" {
 variable "active_environment" {
     description = "The active environment"
     type        = string 
-    default     = "TEST"
 }
 
 variable "dc_region" {
@@ -110,5 +113,16 @@ variable "endpoint" {
         "prod.syd.external"       = "syd.feeds.api.rackspacecloud.com"
         "prod.hkg.internal"       = "atom.prod.hkg1.us.ci.rackspace.net"
         "prod.hkg.external"       = "hkg.feeds.api.rackspacecloud.com"
+    }
+}
+
+variable "identity_env" {
+    description = "A map of the Identity environments correlating to the cloud feeds environment."
+    type        = map(string)
+
+    default = {
+        "test"          = "staging.identity-internal.api.rackspacecloud.com"
+        "staging"       = "staging.identity-internal.api.rackspacecloud.com"
+        "production"    = "identity.api.rackspacecloud.com"
     }
 }
