@@ -1,3 +1,8 @@
+variable "project_name" {
+    description = "Name of the project, used in prefix of each resource"
+    default = "cloudfeeds"
+}
+
 variable "aws_access_key" {
     description = "Access key to AWS console"
 }
@@ -56,7 +61,7 @@ variable "dc_region" {
     }
 }
 
-variable "aws_region" {
+variable "dc_aws_region" {
     description = "A map of the AWS region correlating to the cloud feeds datacenter service."
     type        = map(string)
 

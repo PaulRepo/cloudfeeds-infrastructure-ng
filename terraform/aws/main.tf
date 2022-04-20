@@ -2,7 +2,7 @@ provider "aws" {
   access_key    = var.aws_access_key
   secret_key    = var.aws_secret_key
   token         = var.aws_session_token
-  region        = var.region
+  region        = var.aws_region
   default_tags {
     tags = {
       Environment = var.environments[var.active_environment]
@@ -10,6 +10,16 @@ provider "aws" {
     }
   }
 }
+
+locals {
+    name_prefix = "${var.project_name}-${var.environments[var.active_environment]}"
+}
+
+locals {
+    cluster_name = "${local.name_prefix}-cluster"
+}
+
+data "aws_availability_zones" "available" {}
 
 module "s3_bucket" {
     source = "./s3"      

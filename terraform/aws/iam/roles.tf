@@ -1,5 +1,5 @@
 #Role for EKS Cluster
-resource "aws_iam_role" "cloudfeeds_eks_cluster_ole" {
+resource "aws_iam_role" "cloudfeeds_eks_cluster_role" {
   name                  = "cloudfeeds_eksClusterRole"
   # Terraform's "jsonencode" function converts a
   # Terraform expression result to valid JSON syntax.
@@ -16,7 +16,7 @@ resource "aws_iam_role" "cloudfeeds_eks_cluster_ole" {
       },
     ]
   })
-  managed_policy_arns   = ["arn:aws:iam::aws:policy/AmazonEKSClusterPolicy"]
+  managed_policy_arns   = ["arn:aws:iam::aws:policy/AmazonEKSClusterPolicy", "arn:aws:iam::aws:policy/AmazonEKSServicePolicy", "arn:aws:iam::aws:policy/AmazonEKSVPCResourceController"]
 }
 
 #Role for EKS worker nodes
@@ -35,7 +35,7 @@ resource "aws_iam_role" "cloudfeeds_eks_node_role" {
       },
     ]
   })
-  managed_policy_arns   = ["arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy", "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"]
+  managed_policy_arns   = ["arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy", "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly", "arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy"]
 }
 
 #Role for Dynamodb access
