@@ -7,6 +7,11 @@ resource "aws_dynamodb_table" "cloudfeeds_table" {
   write_capacity = var.table_wcu
   
   attribute {
+    name = "serviceCode"
+    type = "S"
+  }
+
+  attribute {
     name = "entryId"
     type = "S"
   }
@@ -17,6 +22,11 @@ resource "aws_dynamodb_table" "cloudfeeds_table" {
   attribute {
     name = "feed"
     type = "S"
+  }
+
+  ttl {
+    attribute_name = "expiryTime"
+    enabled        = true
   }
 
   local_secondary_index {
@@ -39,4 +49,3 @@ resource "aws_dynamodb_table" "cloudfeeds_table" {
     Name = var.table_name
   }
 }
-

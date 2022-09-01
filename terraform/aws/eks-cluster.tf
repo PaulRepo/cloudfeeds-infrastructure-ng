@@ -1,8 +1,15 @@
 module "eks" {
-  source          = "terraform-aws-modules/eks/aws"
+  source  = "terraform-aws-modules/eks/aws"
+  version = "~> 18.26"
+
   cluster_name    = local.cluster_name
-  cluster_version = "1.18"
-  subnets         = module.vpc.private_subnets
+  cluster_version = var.cluster_version
+
+  cluster_addons = {
+    coredns = {
+      resolve_conflicts = "OVERWRITE"
+    }
+  }
 
   tags = {
     Environment = "training"
@@ -10,28 +17,58 @@ module "eks" {
     GithubOrg   = "terraform-aws-modules"
   }
 
-  vpc_id = module.vpc.vpc_id
+  vpc_id     = module.vpc.vpc_id
+  subnet_ids = module.vpc.private_subnets
 
-  workers_group_defaults = {
-    root_volume_type = "gp2"
+  # Self managed node groups will not automatically create the aws-auth configmap so we need to
+  create_aws_auth_configmap = true
+  manage_aws_auth_configmap = true
+
+  self_managed_node_group_defaults = {
+    create_security_group = false
+
+    # enable discovery of autoscaling groups by cluster-autoscaler
+    autoscaling_group_tags = {
+      "k8s.io/cluster-autoscaler/enabled" : true,
+      "k8s.io/cluster-autoscaler/${local.cluster_name}" : "owned",
+    }
   }
 
-  worker_groups = [
-    {
-      name                          = "worker-group-1"
-      instance_type                 = "t2.small"
-      additional_userdata           = "echo foo bar"
-      asg_desired_capacity          = 2
-      additional_security_group_ids = [aws_security_group.worker_group_mgmt_one.id]
-    },
-    {
-      name                          = "worker-group-2"
-      instance_type                 = "t2.medium"
-      additional_userdata           = "echo foo bar"
-      additional_security_group_ids = [aws_security_group.worker_group_mgmt_two.id]
-      asg_desired_capacity          = 1
-    },
-  ]
+  self_managed_node_groups = {
+
+    mixed = {
+      name = "mixed"
+
+      min_size     = var.mixed_min_size
+      max_size     = var.mixed_max_size
+      desired_size = var.mixed_desired_size
+
+      bootstrap_extra_args = "--kubelet-extra-args '--node-labels=node.kubernetes.io/lifecycle=spot'"
+
+      use_mixed_instances_policy = true
+      mixed_instances_policy = {
+        instances_distribution = {
+          on_demand_base_capacity                  = 0
+          on_demand_percentage_above_base_capacity = 20
+          spot_allocation_strategy                 = "capacity-optimized"
+        }
+
+        override = [
+          {
+            instance_type     = "t3.small"
+            weighted_capacity = "1"
+          }
+        ]
+      }
+    }
+  }
+}
+
+resource "null_resource" "kubectl" {
+  depends_on = [module.eks]
+  provisioner "local-exec" {
+    command = "aws eks --region ${var.aws_region} update-kubeconfig --name ${local.cluster_name}"
+  }
 }
 
 data "aws_eks_cluster" "cluster" {

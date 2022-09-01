@@ -7,12 +7,12 @@ variable "table_name" {
 variable "table_hash_key" {
   type        = string
   description = "DynamoDB table hash key"
-  default     = "entryId"
+  default     = "serviceCode"
 }
 
 variable "table_range_key" {
   type        = string
-  default     = "dateLastUpdated"
+  default     = "entryId"
   description = "DynamoDB table range key"
 }
 
@@ -37,7 +37,7 @@ variable "table_wcu" {
 variable "lsi_name" {
   description = "Local Secondary Index name"
   type        = string 
-  default     = "entryId-feed-index"
+  default     = "serviceCode-dateLastUpdated-index"
 }
 
 variable "lsi_hash_key" {
@@ -48,7 +48,7 @@ variable "lsi_hash_key" {
 
 variable "lsi_range_key" {
   type        = string
-  default     = "feed"
+  default     = "dateLastUpdated"
   description = "Local Secondary Index range key"
 }
 
