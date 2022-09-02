@@ -1,23 +1,3 @@
-/*resource "aws_dynamodb_table" "dynamodb_table_users" {
-  name             = "UsersIds"
-  billing_mode     = "PROVISIONED"
-  read_capacity    = 5
-  write_capacity   = 5
-  stream_enabled   = true
-  stream_view_type = "NEW_AND_OLD_IMAGES"
-  hash_key         = "UserId"
-
-  attribute {
-    name = "UserId"
-    type = "S"
-  }
-
-  tags = {
-    Name        = "dynamodb-test-table"
-    Environment = "dev"
-  }
-} */
-
 resource "aws_lambda_function" "lambda_dynamodb_stream_handler" {
   function_name    = "process-usersids-records"
   filename         = "${data.archive_file.zip.output_path}"
