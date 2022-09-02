@@ -5,6 +5,8 @@ resource "aws_dynamodb_table" "cloudfeeds_table" {
   billing_mode   = var.table_billing_mode
   read_capacity  = var.table_rcu
   write_capacity = var.table_wcu
+  stream_enabled   = true
+  stream_view_type = "NEW_AND_OLD_IMAGES"
   
   attribute {
     name = "serviceCode"

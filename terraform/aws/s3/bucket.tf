@@ -1,6 +1,5 @@
 resource "aws_s3_bucket" "cloudfeeds_bucket" {
-  bucket = var.bucket_name
-  acl    = var.acl_value
+  bucket_prefix = var.bucket_name
 
   versioning {
     enabled = var.versioning
@@ -9,4 +8,9 @@ resource "aws_s3_bucket" "cloudfeeds_bucket" {
   tags = {
     Name = var.bucket_name
   }
+}
+
+resource "aws_s3_bucket_acl" "acl" {
+  bucket = aws_s3_bucket.cloudfeeds_bucket.id
+  acl    = var.acl_value
 }

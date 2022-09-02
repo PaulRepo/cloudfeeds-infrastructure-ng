@@ -5,11 +5,11 @@ module "eks" {
   cluster_name    = local.cluster_name
   cluster_version = var.cluster_version
 
-  cluster_addons = {
+  /* cluster_addons = {
     coredns = {
       resolve_conflicts = "OVERWRITE"
     }
-  }
+  }*/
 
   tags = {
     Environment = "training"

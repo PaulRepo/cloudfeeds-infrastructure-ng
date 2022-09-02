@@ -22,3 +22,7 @@ variable "table_arn" {
 variable "bucket_arn" {
   description = "Arn of the cloudfeeds bucket resource for IAM policy control"
 }
+
+variable "lambda_fuction_arn" {
+  description = "Arn of the backup lambda function"
+}

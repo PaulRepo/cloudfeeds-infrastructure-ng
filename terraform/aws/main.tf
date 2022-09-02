@@ -29,10 +29,19 @@ module "dynamodb" {
   source = "./dynamodb"
 }
 
+module "lambdafunction" {
+  source                     = "./lambdafunction"
+  table_stream_arn           = module.dynamodb.cloudfeeds_table_stream_arn
+  bucket_id                  = module.s3_bucket.cloudfeeds_bucket_id
+  cloudfeeds_lambdafunc_role = module.iam_roles.cloudfeeds_lambdafunc_role
+}
+
+
 module "iam_roles" {
   source = "./iam"
   #aws_account_id = var.aws_account_id
   #environment = var.environments[var.active_environment]
-  table_arn  = module.dynamodb.cloudfeeds_table_arn
-  bucket_arn = module.s3_bucket.cloudfeeds_bucket_arn
+  table_arn          = module.dynamodb.cloudfeeds_table_arn
+  bucket_arn         = module.s3_bucket.cloudfeeds_bucket_arn
+  lambda_fuction_arn = module.lambdafunction.lambda_fuction_arn
 }
