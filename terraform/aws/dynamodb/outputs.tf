@@ -11,3 +11,8 @@ output "cloudfeeds_table_id" {
 output "cloudfeeds_table_all_tags" {
   value = aws_dynamodb_table.cloudfeeds_table.tags_all
 }
+
+output "cloudfeeds_table_stream_arn" {
+  description = "Stream ARN for the DynamoDB table"
+  value = aws_dynamodb_table.cloudfeeds_table.stream_arn
+}

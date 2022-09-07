@@ -1,3 +1,7 @@
+################################################################################
+# Role and policies for EKS
+################################################################################
+
 #Role for EKS Cluster
 resource "aws_iam_role" "cloudfeeds_eks_cluster_role" {
   name                  = "cloudfeeds_eksClusterRole"
@@ -38,6 +42,10 @@ resource "aws_iam_role" "cloudfeeds_eks_node_role" {
   managed_policy_arns   = ["arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy", "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly", "arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy"]
 }
 
+################################################################################
+# Role and policies for Dynamodb
+################################################################################
+
 #Role for Dynamodb access
 resource "aws_iam_role" "cloudfeeds_dynamodb_access_role" {
   name                  = "cloudfeeds_dynamodbAccessRole"
@@ -73,7 +81,7 @@ resource "aws_iam_policy" "cloudfeeds_dynamodb_access_policy" {
         ]
         Effect          = "Allow"
         Sid             = "ListAndDescribe"
-        Resource        = "*"
+        Resource        = [var.table_arn]
       },
       {
         Action          = [
@@ -101,6 +109,10 @@ resource "aws_iam_role_policy_attachment" "cloudfeeds_dynamodb_access_policy_att
   role                  = aws_iam_role.cloudfeeds_dynamodb_access_role.name
   policy_arn            = aws_iam_policy.cloudfeeds_dynamodb_access_policy.arn
 }
+
+################################################################################
+# Role and policies for S3 Bucket
+################################################################################
 
 #Role for S3 access
 resource "aws_iam_policy" "cloudfeeds_bucket_access_policy" {
@@ -149,7 +161,7 @@ resource "aws_iam_role_policy_attachment" "cloudfeeds_bucket_access_policy_attac
 }
 
 #Datadog
-resource "aws_iam_policy" "cloudfeeds_datadog_integration_policy" {
+/*resource "aws_iam_policy" "cloudfeeds_datadog_integration_policy" {
   name                  = "cloudfeeds_datadogIntegrationPolicy"
   path                  = "/"
   description           = "Allow access on Cloudfeeds resources"
@@ -200,3 +212,75 @@ resource "aws_iam_role_policy_attachment" "cloudfeeds_datadog_aws_integration_po
   policy_arn            = aws_iam_policy.cloudfeeds_datadog_integration_policy.arn
 }
 
+*/
+
+################################################################################
+# Role and policies for Lambda Function
+################################################################################
+
+resource "aws_iam_role" "iam_for_lambda" {
+  name = "iam_for_lambda"
+
+  assume_role_policy = <<EOF
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Action": "sts:AssumeRole",
+      "Principal": {
+        "Service": "lambda.amazonaws.com"
+      },
+      "Effect": "Allow",
+      "Sid": "RuleForMyLambdaAccess"
+    }
+  ]
+}
+EOF
+}
+
+resource "aws_iam_role_policy" "dynamodb_lambda_policy" {
+  name   = "lambda-dynamodb-policy"
+  role   = aws_iam_role.iam_for_lambda.id
+  policy = <<EOF
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+            "Sid": "AllowLambdaFunctionInvocation",
+            "Effect": "Allow",
+            "Action": [
+                "s3:PutObject",
+                "s3:GetObject",
+                "s3:AbortMultipartUpload",
+                "lambda:InvokeFunction",
+                "dynamodb:GetShardIterator",
+                "s3:ListBucket",
+                "dynamodb:DescribeStream",
+                "s3:DeleteObject",
+                "s3:GetObjectVersion",
+                "s3:ListMultipartUploadParts",
+                "dynamodb:GetRecords"
+            ],
+            "Resource": [
+                "${var.lambda_fuction_arn}",
+                "${var.table_arn}/stream/*",
+                "${var.bucket_arn}",
+                "${var.bucket_arn}/*"
+            ]
+        },
+        {
+            "Sid": "AllowLambdaFunctionToCreateLogs",
+            "Effect": "Allow",
+            "Action": "logs:*",
+            "Resource": "arn:aws:logs:*:*:*"
+        },
+        {
+            "Sid": "APIAccessForDynamoDBStreams",
+            "Effect": "Allow",
+            "Action": "dynamodb:ListStreams",
+            "Resource": "${var.table_arn}/stream/*"
+        }
+  ]
+}
+EOF
+}

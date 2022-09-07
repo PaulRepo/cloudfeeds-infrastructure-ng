@@ -5,7 +5,14 @@ resource "aws_dynamodb_table" "cloudfeeds_table" {
   billing_mode   = var.table_billing_mode
   read_capacity  = var.table_rcu
   write_capacity = var.table_wcu
+  stream_enabled   = true
+  stream_view_type = "NEW_AND_OLD_IMAGES"
   
+  attribute {
+    name = "serviceCode"
+    type = "S"
+  }
+
   attribute {
     name = "entryId"
     type = "S"
@@ -17,6 +24,11 @@ resource "aws_dynamodb_table" "cloudfeeds_table" {
   attribute {
     name = "feed"
     type = "S"
+  }
+
+  ttl {
+    attribute_name = "expiryTime"
+    enabled        = true
   }
 
   local_secondary_index {
@@ -39,4 +51,3 @@ resource "aws_dynamodb_table" "cloudfeeds_table" {
     Name = var.table_name
   }
 }
-

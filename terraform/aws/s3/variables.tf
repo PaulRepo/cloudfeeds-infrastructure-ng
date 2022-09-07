@@ -12,6 +12,6 @@ variable "acl_value" {
 
 variable "versioning" {
   description = "Versioning of the s3 bucket items"
-  type        = bool
-  default     = false
+  type        = string
+  default     = "Disabled"
 }
